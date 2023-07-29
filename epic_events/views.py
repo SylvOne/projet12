@@ -36,6 +36,9 @@ class ClientViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsCommercialOrContactClientOrReadOnly]
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
     filterset_class = ClientFilter
+    
+    def destroy(self, request, *args, **kwargs):
+        return Response({"error": "Suppression de client non autorisée."}, status=status.HTTP_403_FORBIDDEN)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -112,6 +115,8 @@ class ContractViewSet(viewsets.ModelViewSet):
     filterset_class = ContractFilter
     is_contract_view = True
 
+    def destroy(self, request, *args, **kwargs):
+        return Response({"error": "Suppression de contrat non autorisée."}, status=status.HTTP_403_FORBIDDEN)
 
 class EventFilter(django_filters.FilterSet):
     class Meta:
@@ -191,6 +196,9 @@ class EventViewSet(viewsets.ModelViewSet):
         except Exception as e:
             capture_exception(e)
             raise e
+
+    def destroy(self, request, *args, **kwargs):
+        return Response({"error": "Suppression d'événement non autorisée."}, status=status.HTTP_403_FORBIDDEN)
 
 
 
