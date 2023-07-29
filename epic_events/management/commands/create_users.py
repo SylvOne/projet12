@@ -26,4 +26,4 @@ class Command(BaseCommand):
         support_group, _ = Group.objects.get_or_create(name='Support')
         support_group.user_set.add(user_support)
 
-        self.stdout.write(self.style.SUCCESS('Users created and added to groups successfully'))
+        self.stdout.write(self.style.SUCCESS('Les utilisateurs ont été créés et ajoutés aux groupes correspondants.'))

@@ -32,7 +32,7 @@ class IsGestionOrCommercialContactOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if view.action == 'create':
             return request.user.groups.filter(name='Gestion').exists()
-        elif view.action == 'update':
+        elif view.action in ['update', 'partial_update']:
             # Pour l'action 'update', nous devons vérifier si l'utilisateur est le contact commercial du contrat,
             # mais l'objet du contrat n'est pas disponible à ce stade.
             # Nous retournons donc True ici et effectuons la vérification dans `has_object_permission`.
@@ -44,7 +44,7 @@ class IsGestionOrCommercialContactOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        if view.action == 'update':
+        if view.action in ['update', 'partial_update']:
             return request.user == obj.commercial_contact or request.user.groups.filter(name='Gestion').exists()
 
         return True
@@ -62,8 +62,8 @@ class IsGestionGroup(permissions.BasePermission):
 class EventPermissions(permissions.BasePermission):
     """
     Cette permission autorise :
-    - La création d'un événement seulement par un utilisateur du groupe "Commercial" s'il est le contact du client associé à l'événement.
-    - La mise à jour de l'événement seulement pour le groupe "Gestion".
+    - La création d'un événement seulement par un utilisateur du groupe "Commercial" s'il est le contact commercial du contrat associé à l'événement.
+    - La mise à jour de l'événement seulement pour le groupe "Gestion" et "Support".
     - La lecture pour tous les utilisateurs.
     """
 
@@ -76,9 +76,9 @@ class EventPermissions(permissions.BasePermission):
         if view.action == 'create':
             return request.user.groups.filter(name='Commercial').exists()
         
-        # Seuls les utilisateurs du groupe "Gestion" peuvent mettre à jour un événement
+        # Les utilisateurs des groupes "Gestion" et "Support" peuvent mettre à jour un événement
         elif view.action in ['update', 'partial_update']:
-            return request.user.groups.filter(name='Gestion').exists()
+            return request.user.groups.filter(name__in=['Gestion', 'Support']).exists()
 
         return False
 
@@ -87,13 +87,12 @@ class EventPermissions(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        # L'utilisateur doit être le contact du client associé à l'événement pour pouvoir le créer
-        if view.action == 'create':
-            client = Client.objects.get(id=request.data.get('client'))
-            return request.user == client.contact
-        
-        # Seuls les utilisateurs du groupe "Gestion" peuvent mettre à jour un événement
-        elif view.action in ['update', 'partial_update']:
-            return request.user.groups.filter(name='Gestion').exists()
+        # Les utilisateurs des groupes "Gestion" peuvent mettre à jour n'importe quel événement
+        if view.action in ['update', 'partial_update'] and request.user.groups.filter(name='Gestion').exists():
+            return True
+
+        # Les utilisateurs du groupe "Support" peuvent mettre à jour un événement s'ils sont le support_contact
+        if view.action in ['update', 'partial_update'] and request.user.groups.filter(name='Support').exists():
+            return obj.support_contact == request.user
 
         return False

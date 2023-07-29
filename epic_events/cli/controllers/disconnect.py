@@ -1,8 +1,12 @@
 import keyring
+from rich.console import Console
 
+
+
+console = Console()
 
 def logout():
     # Suppression du token du keyring
     keyring.delete_password("epicevents", "jwt_token")
     keyring.delete_password("epicevents", "user_id")
-    print("You have been successfully logged out")
+    console.print("Vous avez été déconnecté avec succès", style="bold green")

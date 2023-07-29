@@ -1,12 +1,21 @@
 import os
 import sys
-import django
+# Obtenez le chemin absolu vers le dossier du projet (le parent de "views")
+dossier_projet = os.path.abspath(os.path.join(os.path.dirname(__file__),"..", "..", ".."))
+# Ajoutez le dossier du projet au chemin Python
+sys.path.append(dossier_projet)
+
+# Maintenant, définissez le module de configuration Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'projet12.settings')
+
+# Ensuite, vous pouvez appeler django.setup()
+import django
 django.setup()
 import keyring
 import getpass
 import argparse
-from epic_events.cli import login, clients, contracts, events, disconnect, gestion
+from epic_events.cli.controllers import login, disconnect
+from epic_events.cli.models import gestion, clients, contracts, events
 
 
 
@@ -52,18 +61,19 @@ parser_clients.add_argument('--filters', nargs='+', action='append')
 
 # Création du parser pour la commande "contracts"
 parser_contracts = subparsers.add_parser('contracts', help='contracts command help')
-parser_contracts.add_argument('action', choices=['create', 'update', 'delete', 'list'])
+parser_contracts.add_argument('action', choices=['create', 'update', 'delete', 'list', 'update_status'])
 parser_contracts.add_argument('--contract_id', type=int)
 parser_contracts.add_argument('--client_email')
 parser_contracts.add_argument('--total_amount', type=float)
 parser_contracts.add_argument('--amount_due', type=float)
 parser_contracts.add_argument('--filters', nargs='+', action='append')
+parser_contracts.add_argument('--status', required='update_status' in sys.argv)
 
 
 
 # Création du parser pour la commande "events"
 parser_events = subparsers.add_parser('events', help='events command help')
-parser_events.add_argument('action', choices=['create', 'assign_support', 'list', 'no_support_contact'])
+parser_events.add_argument('action', choices=['create', 'assign_support', 'list', 'update', 'no_support_contact'])
 parser_events.add_argument('--event_name', required='create' in sys.argv)
 parser_events.add_argument('--contract_id', required='create' in sys.argv, type=int)
 parser_events.add_argument('--event_date_start', required='create' in sys.argv)
@@ -77,6 +87,16 @@ parser_events.add_argument('--filters', nargs='+', action='append')
 # arguments spécifiques à la commande 'assign_support' pour le parser 'events'
 parser_events.add_argument('--event_id', required='assign_support' in sys.argv, type=int)
 parser_events.add_argument('--support_contact_username', required='assign_support' in sys.argv)
+
+# arguments spécifiques à la commande 'update' pour le parser 'events'
+parser_events.add_argument('--event_id_update', required='update' in sys.argv, type=int)
+parser_events.add_argument('--new_event_name', required='update' in sys.argv)
+parser_events.add_argument('--new_contract_id', required='update' in sys.argv, type=int)
+parser_events.add_argument('--new_event_date_start', required='update' in sys.argv)
+parser_events.add_argument('--new_event_date_end', required='update' in sys.argv)
+parser_events.add_argument('--new_location', required='update' in sys.argv)
+parser_events.add_argument('--new_attendees', required='update' in sys.argv, type=int)
+parser_events.add_argument('--new_notes', required='update' in sys.argv)
 
 
 # Création du parser pour la commande "login"
@@ -133,7 +153,7 @@ elif 'clients' in sys.argv:
     elif args.action == 'list':
         if args.filters is not None:
             filters = dict(filter.split('=') for filter in args.filters[0])
-            clients.get_filtered_clients(filters, token)
+            clients.get_filtered_clients(token, filters)
         else:
             clients.get_filtered_clients(token)
 elif 'contracts' in sys.argv:
@@ -149,10 +169,12 @@ elif 'contracts' in sys.argv:
         if not all([args.contract_id, args.client_email, args.total_amount, args.amount_due]):
             sys.exit("Please provide contract ID, client email, total amount, and amount due for updating a contract.")
         contracts.update_contract(args.contract_id, args.client_email, args.total_amount, args.amount_due, token)
+    elif args.action == 'update_status':
+        contracts.update_contract_status(args.contract_id, args.status, token)
     elif args.action == 'list':
         if args.filters is not None:
             filters = dict(filter.split('=') for filter in args.filters[0])
-            contracts.get_filtered_contracts(filters, token)
+            contracts.get_filtered_contracts(token, filters)
         else:
             contracts.get_filtered_contracts(token)
 elif 'events' in sys.argv:
@@ -162,10 +184,13 @@ elif 'events' in sys.argv:
         sys.exit("Please login first.")
     if args.action == 'create':
         events.create_event(args.event_name, args.contract_id, args.event_date_start, args.event_date_end, args.location, args.attendees, args.notes, token)
+    elif args.action == 'update':
+        events.update_event(args.event_id_update, args.new_event_name, args.new_contract_id, args.new_event_date_start, 
+                            args.new_event_date_end, args.new_location, args.new_attendees, args.new_notes, token)
     elif args.action == 'list':
         if args.filters is not None:
             filters = dict(filter.split('=') for filter in args.filters[0])
-            events.get_filtered_events(filters, token)
+            events.get_filtered_events(token, filters)
         else:
             events.get_filtered_events(token)
     elif args.action == 'assign_support':

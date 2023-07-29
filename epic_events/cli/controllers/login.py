@@ -2,14 +2,18 @@ import requests
 import keyring
 import sys
 import json
+from . import constants
+from rich.console import Console
 
 
-BASE_URL = 'http://localhost:8000/api/'
+
+console = Console()
+BASE_URL = constants.BASE_URL
 
 def authenticate(username, password):
     response = requests.post(BASE_URL + 'token/', data={'username': username, 'password': password})
     if response.status_code != 200:
-        sys.exit('Invalid username or password.')
+        sys.exit('Mot de passe ou username invalide.')
     token = response.json()['access']
 
     # Stockage du token dans le keyring
@@ -27,6 +31,6 @@ def authenticate(username, password):
     # Stockage de l'ID de l'utilisateur dans le keyring
     keyring.set_password("epicevents", "user_id", user_id)
 
-    print("Thanks for your connection")
+    console.print("Merci pour votre connexion", style="bold green")
 
     return token
