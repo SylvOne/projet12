@@ -44,6 +44,12 @@ Cette application a été réalisée en trois parties :
     pip install -r requirements.txt
     ```
 
+6. Créez un fichier .env à la racine du projet et stockez les variables d'environnements SECRET_KEY et SENTRY_DSN :
+    ```
+    SECRET_KEY="your_django_secret_key"
+    SENTRY_DSN=https://your_sentry_DNS
+    ```
+
 ## Execution du serveur
 Commencez par configurer votre base de données PostgreSQL à l'aide de l'outil PgAdmin, que vous pouvez obtenir à partir de "l'EDB Installer".
 
