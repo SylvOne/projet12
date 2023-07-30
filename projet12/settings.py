@@ -17,10 +17,7 @@ import os
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-load_dotenv()
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-SENTRY_DSN = os.getenv("SENTRY_DSN")
+load_dotenv('.env')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,7 +27,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x=48*$v@4o%t7x$8a+5#!m%sn!l-nb%q+1(v9+r_n&s9m@8ztp'
+SECRET_KEY = os.getenv("SECRET_KEY")
+SENTRY_DSN = os.getenv("SENTRY_DSN")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
