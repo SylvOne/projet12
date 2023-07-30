@@ -1,7 +1,6 @@
 from rest_framework import permissions
 
 
-
 class IsCommercialOrContactClientOrReadOnly(permissions.BasePermission):
     """
     Cette permission autorise seulement l'update d'un client,
@@ -62,7 +61,8 @@ class IsGestionGroup(permissions.BasePermission):
 class EventPermissions(permissions.BasePermission):
     """
     Cette permission autorise :
-    - La création d'un événement seulement par un utilisateur du groupe "Commercial" s'il est le contact commercial du contrat associé à l'événement.
+    - La création d'un événement seulement par un utilisateur du groupe "Commercial"
+      s'il est le contact commercial du contrat associé à l'événement.
     - La mise à jour de l'événement seulement pour le groupe "Gestion" et "Support".
     - La lecture pour tous les utilisateurs.
     """
@@ -75,7 +75,7 @@ class EventPermissions(permissions.BasePermission):
         # Seuls les utilisateurs du groupe "Commercial" peuvent créer un événement
         if view.action == 'create':
             return request.user.groups.filter(name='Commercial').exists()
-        
+
         # Les utilisateurs des groupes "Gestion" et "Support" peuvent mettre à jour un événement
         elif view.action in ['update', 'partial_update']:
             return request.user.groups.filter(name__in=['Gestion', 'Support']).exists()

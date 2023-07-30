@@ -1,8 +1,4 @@
-import argparse
-from epic_events.models import Client, User
 import sys
-import keyring
-import getpass
 import requests
 import json
 from epic_events.cli.controllers import constants, utils
@@ -27,12 +23,17 @@ def get_filtered_clients(token, filters=None):
     except Exception as e:
         sentry_sdk.capture_exception(e)
         sys.exit('Failed to get clients. ' + response.text)
-    
     clients_info = response.json()
 
     for client in clients_info:
-        console.print(f"Client: {client['full_name']}, Email: {client['email']}, Phone: {client['phone']}, Company: {client['company_name']}, Contact: {client['contact']}", style="bold blue")
-
+        client_info_string = (
+            f"Client: {client['full_name']}, "
+            f"Email: {client['email']}, "
+            f"Phone: {client['phone']}, "
+            f"Company: {client['company_name']}, "
+            f"Contact: {client['contact']}"
+        )
+    console.print(client_info_string, style="bold blue")
 
 
 def create_client(full_name, email, phone, company_name, commercial_id, token):
@@ -40,7 +41,6 @@ def create_client(full_name, email, phone, company_name, commercial_id, token):
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json'
     }
-    
 
     client_data = {
         'full_name': full_name,
@@ -65,7 +65,6 @@ def update_client(full_name, email, phone, company_name, client_email, token):
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json'
     }
-    
     # Récupérer l'ID du client à partir de l'email
     client_id = utils.get_client_id(client_email, token)
 
@@ -77,7 +76,6 @@ def update_client(full_name, email, phone, company_name, client_email, token):
         sentry_sdk.capture_exception(e)
         sys.exit('Echec pour obtenir les informations du client. ' + response.text)
 
-    
     client_info = response.json()
 
     client_data = {

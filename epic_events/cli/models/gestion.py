@@ -9,7 +9,8 @@ from rich.console import Console
 console = Console()
 BASE_URL = constants.BASE_URL
 
-def create_user(username, password, email,first_name, last_name, group, token):
+
+def create_user(username, password, email, first_name, last_name, group, token):
     headers = {
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json'
@@ -30,11 +31,19 @@ def create_user(username, password, email,first_name, last_name, group, token):
     except Exception as e:
         sentry_sdk.capture_exception(e)
         sys.exit('Echec pour créer l utilisateur. ' + str(e))
-    
     console.print('User créé avec succès.', style="bold green")
 
 
-def update_user(username, token, new_username=None, new_password=None, new_email=None, new_first_name=None, new_last_name=None, new_group=None):
+def update_user(
+    username,
+    token,
+    new_username=None,
+    new_password=None,
+    new_email=None,
+    new_first_name=None,
+    new_last_name=None,
+    new_group=None
+):
     headers = {
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json'
@@ -71,13 +80,14 @@ def update_user(username, token, new_username=None, new_password=None, new_email
 
     # On met à jour l'utilisteur sur le serveur
     try:
-        response = requests.patch(BASE_URL + 'users/' + str(user_id) + '/', data=json.dumps(user_data), headers=headers)
+        response = requests.patch(
+            BASE_URL + 'users/' + str(user_id) + '/', data=json.dumps(user_data), headers=headers
+        )
         response.raise_for_status()
     except Exception as e:
         sentry_sdk.capture_exception(e)
         print('Echec pour mettre à jour l utilisateur. ' + str(e))
         return
-    
     console.print('Utilisateur mis à jour avec succès.', style="bold green")
 
 
@@ -106,7 +116,6 @@ def delete_user(username, token):
             sentry_sdk.capture_exception(e)
             print("Echec pour effacer l'utilisateur. " + str(e))
             return
-        
         console.print('Utilisateur effacé avec succès', style="bold green")
     else:
         console.print(f"Aucun utilisateur trouvé avec le username {username}", style="bold red")

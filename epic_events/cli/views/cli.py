@@ -1,22 +1,18 @@
 import os
 import sys
-# Obtenez le chemin absolu vers le dossier du projet (le parent de "views")
-dossier_projet = os.path.abspath(os.path.join(os.path.dirname(__file__),"..", "..", ".."))
-# Ajoutez le dossier du projet au chemin Python
+# Chemin absolu vers le dossier du projet
+dossier_projet = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+# Ajout du dossier du projet au chemin Python
 sys.path.append(dossier_projet)
-
-# Maintenant, définissez le module de configuration Django
+# Définition du module de configuration Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'projet12.settings')
-
-# Ensuite, vous pouvez appeler django.setup()
-import django
+import django  # noqa: E402
 django.setup()
-import keyring
-import getpass
-import argparse
-from epic_events.cli.controllers import login, disconnect
-from epic_events.cli.models import gestion, clients, contracts, events
-
+import keyring  # noqa: E402
+import getpass  # noqa: E402
+import argparse  # noqa: E402
+from epic_events.cli.controllers import login, disconnect  # noqa: E402
+from epic_events.cli.models import gestion, clients, contracts, events  # noqa: E402
 
 
 # Création du parser de niveau supérieur
@@ -58,7 +54,6 @@ parser_clients.add_argument('--client_email', required='update' in sys.argv)
 parser_clients.add_argument('--filters', nargs='+', action='append')
 
 
-
 # Création du parser pour la commande "contracts"
 parser_contracts = subparsers.add_parser('contracts', help='contracts command help')
 parser_contracts.add_argument('action', choices=['create', 'update', 'delete', 'list', 'update_status'])
@@ -68,7 +63,6 @@ parser_contracts.add_argument('--total_amount', type=float)
 parser_contracts.add_argument('--amount_due', type=float)
 parser_contracts.add_argument('--filters', nargs='+', action='append')
 parser_contracts.add_argument('--status', required='update_status' in sys.argv)
-
 
 
 # Création du parser pour la commande "events"
@@ -132,7 +126,15 @@ elif 'update_user' in sys.argv:
     # Pour récupérer le mot de passe de manière sécurisée
     new_password = getpass.getpass("Enter the new password for the user:") if args.password else None
     # Appel de la fonction pour mettre à jour un utilisateur
-    gestion.update_user(args.username, token, args.new_username, new_password, args.email, args.first_name, args.last_name, args.group)
+    gestion.update_user(
+        args.username,
+        token, args.new_username,
+        new_password,
+        args.email,
+        args.first_name,
+        args.last_name,
+        args.group
+    )
 elif 'delete_user' in sys.argv:
     # Pour récupérer le token
     token = keyring.get_password("epicevents", "jwt_token")
@@ -183,9 +185,18 @@ elif 'events' in sys.argv:
     if not token:
         sys.exit("Please login first.")
     if args.action == 'create':
-        events.create_event(args.event_name, args.contract_id, args.event_date_start, args.event_date_end, args.location, args.attendees, args.notes, token)
+        events.create_event(
+            args.event_name,
+            args.contract_id,
+            args.event_date_start,
+            args.event_date_end,
+            args.location,
+            args.attendees,
+            args.notes,
+            token
+        )
     elif args.action == 'update':
-        events.update_event(args.event_id_update, args.new_event_name, args.new_contract_id, args.new_event_date_start, 
+        events.update_event(args.event_id_update, args.new_event_name, args.new_contract_id, args.new_event_date_start,
                             args.new_event_date_end, args.new_location, args.new_attendees, args.new_notes, token)
     elif args.action == 'list':
         if args.filters is not None:

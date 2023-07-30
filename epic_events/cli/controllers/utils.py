@@ -1,9 +1,7 @@
 import requests
-import json
 import sys
 from . import constants
 from datetime import datetime
-
 
 
 BASE_URL = constants.BASE_URL
@@ -46,7 +44,5 @@ def convert_date_to_iso(date_str):
     except ValueError:
         # Si cela échoue, essayez de l'analyser au format 'dd-mm-yyyy'
         dt = datetime.strptime(date_str, "%d-%m-%Y")
-    
     # Convertir en format ISO
     return dt.strftime("%Y-%m-%d")
-

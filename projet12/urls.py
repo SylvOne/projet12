@@ -24,7 +24,6 @@ from epic_events.views import ClientViewSet, UserViewSet, ContractViewSet, Curre
 from rest_framework.routers import DefaultRouter
 
 
-
 router = DefaultRouter()
 router.register(r'clients', ClientViewSet)
 router.register(r'users', UserViewSet)

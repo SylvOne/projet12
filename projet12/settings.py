@@ -12,9 +12,15 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
 import os
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+SENTRY_DSN = os.getenv("SENTRY_DSN")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -85,11 +91,10 @@ DATABASES = {
         'NAME': 'epic_events',
         'USER': 'admin',
         'PASSWORD': 'admin',
-        'HOST': 'localhost',  # or the location of your postgres server if it's remote
-        'PORT': '5432',  # default postgres port
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
-
 
 
 # Password validation
@@ -148,7 +153,7 @@ SIMPLE_JWT = {
 
 # Sentry
 sentry_sdk.init(
-    dsn=os.environ.get('SENTRY_DSN'),
+    dsn=SENTRY_DSN,
     integrations=[DjangoIntegration()],
     traces_sample_rate=1.0,
     send_default_pii=True

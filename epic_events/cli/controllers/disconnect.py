@@ -2,8 +2,8 @@ import keyring
 from rich.console import Console
 
 
-
 console = Console()
+
 
 def logout():
     # Suppression du token du keyring

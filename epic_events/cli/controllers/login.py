@@ -1,14 +1,13 @@
 import requests
 import keyring
 import sys
-import json
 from . import constants
 from rich.console import Console
 
 
-
 console = Console()
 BASE_URL = constants.BASE_URL
+
 
 def authenticate(username, password):
     response = requests.post(BASE_URL + 'token/', data={'username': username, 'password': password})

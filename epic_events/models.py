@@ -1,6 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User, Group
-
+from django.contrib.auth.models import User
 
 
 class Client(models.Model):
@@ -15,6 +14,7 @@ class Client(models.Model):
     def __str__(self):
         return f'ID {self.id} - Client {self.full_name} - {self.company_name} - {self.email}'
 
+
 class Contract(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     commercial_contact = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -25,6 +25,7 @@ class Contract(models.Model):
 
     def __str__(self):
         return f'Contract {self.id} with client {self.client.full_name}'
+
 
 class Event(models.Model):
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE)

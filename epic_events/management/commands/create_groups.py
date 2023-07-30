@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Group
+
 
 class Command(BaseCommand):
     help = 'Create custom groups'
@@ -7,7 +8,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Création du groupe "Commercial"
         commercial_group, _ = Group.objects.get_or_create(name='Commercial')
-        
         # Création du groupe "Gestion"
         gestion_group, _ = Group.objects.get_or_create(name='Gestion')
 
