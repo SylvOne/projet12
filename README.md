@@ -149,10 +149,13 @@ Cela créera les utilisateurs "userCommercial", "userGestion" et "userSupport", 
 
 _Remarque_ : La création des groupes et des utilisateurs aurait pu se faire via l'interface d'administration de Django, mais pour plus de simplicité pour tester l'application, j'ai préparé ces 2 fichiers de commandes personnalisées.
 
-## Documentation de l'API
+## Documentation de l'API et schéma de la base de données
 
 La documentation de l'API est accessible ici :
 [Documentation API](https://documenter.getpostman.com/view/17650939/2s9XxsWcSL)
+
+Le schéma de la base de données est accessible ici :
+![Schéma base de données](./assets/schema_bdd.png)
 
 ## Connexion à l'interface d'administration Django
 
