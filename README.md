@@ -429,10 +429,10 @@ python cli.py events assign_support --event_id 5 --support_contact_username user
 
 * <b> Liste filtrée d'événements : ( accessible à tous les groupes ) :</b>
 
-* liste des évènements situé dans la ville de Paris
+* liste des évènements ayant pour contact support l'utilisateur userSupport2
 
 ```
-python cli.py events list --filters location=Paris
+python cli.py events list --filters support_contact__username=userSupport2
 ```
 
 * liste des évènements n'ayant pas de membre support associé
