@@ -92,7 +92,13 @@ class UserViewSet(viewsets.ModelViewSet):
             group_name = data.get('group')
             if group_name:
                 group = get_object_or_404(Group, name=group_name)
+                # Si l'utilisateur appartient à un groupe, on le retire de tous les groupes
+                if instance.groups.exists():
+                    for g in instance.groups.all():
+                        g.user_set.remove(instance)
                 data['groups'] = [group.id]
+                # Ajouter l'utilisateur au nouveau groupe
+                group.user_set.add(instance)
             serializer = self.get_serializer(self.get_object(), data=data, partial=True)
             serializer.is_valid(raise_exception=True)
             self.perform_update(serializer)
