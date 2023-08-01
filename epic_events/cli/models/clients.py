@@ -25,8 +25,6 @@ def get_filtered_clients(token, filters=None):
         sys.exit('Failed to get clients. ' + response.text)
     clients_info = response.json()
 
-    client_info_strings = []
-
     for client in clients_info:
         client_info_string = (
             f"Client: {client['full_name']}, "
@@ -35,12 +33,8 @@ def get_filtered_clients(token, filters=None):
             f"Company: {client['company_name']}, "
             f"Contact: {client['contact']}"
         )
-        # Ajout de la nouvelle chaine de caractères à la liste
-        client_info_strings.append(client_info_string)
-
-    # Affiche les infos clients
-    for info_string in client_info_strings:
         console.print(client_info_string, style="bold blue")
+
 
 
 def create_client(full_name, email, phone, company_name, commercial_id, token):
