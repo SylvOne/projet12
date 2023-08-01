@@ -4,6 +4,7 @@ import json
 from epic_events.cli.controllers import constants, utils
 import sentry_sdk
 from rich.console import Console
+from datetime import datetime
 
 
 console = Console()
@@ -33,7 +34,7 @@ def create_event(event_name, contract_id, event_date_start, event_date_end, loca
         response.raise_for_status()
     except Exception as e:
         sentry_sdk.capture_exception(e)
-        sys.exit('Failed to create event. ' + str(e))
+        sys.exit('Echec pour créer l evenement. ' + str(e))
     console.print('Event créé avec succès.', style="bold green")
 
 
@@ -57,9 +58,25 @@ def get_filtered_events(token, filters=None):
     except Exception as e:
         sentry_sdk.capture_exception(e)
         sys.exit('Echec pour obtenir les evenements. ' + str(e))
-    events = response.json()
-    for event in events:
-        console.print(event)
+    events_info = response.json()
+
+    for event in events_info:
+        # Convertit les dates de l'événement en un format plus lisible
+        event_date_start = datetime.strptime(event['event_date_start'], "%Y-%m-%dT%H:%M:%SZ")
+        event_date_end = datetime.strptime(event['event_date_end'], "%Y-%m-%dT%H:%M:%SZ")
+
+        event_info_string = (
+            f"\nEvent ID: {event['id']}\n"
+            f"Contract: {event['contract']}\n"
+            f"Event Name: {event['event_name']}\n"
+            f"Event Start Date: {event_date_start.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"Event End Date: {event_date_end.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"Location: {event['location']}\n"
+            f"Attendees: {event['attendees']}\n"
+            f"Notes: {event['notes']}\n"
+            f"Support Contact: {event['support_contact'] if event['support_contact'] else 'None'}\n"
+        )
+        console.print(event_info_string, style="bold green")
 
 
 def get_events_no_support_contact(token):
@@ -73,9 +90,25 @@ def get_events_no_support_contact(token):
     except Exception as e:
         sentry_sdk.capture_exception(e)
         sys.exit('Echec pour obtenir l evenement. ' + str(e))
-    events = response.json()
-    for event in events:
-        console.print(event)
+    events_info = response.json()
+
+    for event in events_info:
+        # Convertit les dates de l'événement en un format plus lisible
+        event_date_start = datetime.strptime(event['event_date_start'], "%Y-%m-%dT%H:%M:%SZ")
+        event_date_end = datetime.strptime(event['event_date_end'], "%Y-%m-%dT%H:%M:%SZ")
+
+        event_info_string = (
+            f"\nEvent ID: {event['id']}\n"
+            f"Contract: {event['contract']}\n"
+            f"Event Name: {event['event_name']}\n"
+            f"Event Start Date: {event_date_start.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"Event End Date: {event_date_end.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"Location: {event['location']}\n"
+            f"Attendees: {event['attendees']}\n"
+            f"Notes: {event['notes']}\n"
+            f"Support Contact: {event['support_contact'] if event['support_contact'] else 'None'}\n"
+        )
+        console.print(event_info_string, style="bold blue")
 
 
 def assign_support_contact_to_event(event_id, support_contact_username, token):

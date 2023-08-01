@@ -4,6 +4,7 @@ import json
 from epic_events.cli.controllers import constants, utils
 import sentry_sdk
 from rich.console import Console
+from datetime import datetime
 
 
 console = Console()
@@ -98,4 +99,13 @@ def get_filtered_contracts(token, filters=None):
         sys.exit('Echec pour obtenir les contrats. ' + response.text)
     contracts = response.json()
     for contract in contracts:
-        console.print(contract)
+        contract_string = (
+            f"Contrat ID: {contract['id']}\n"
+            f"Client ID: {contract['client']}\n"
+            f"Contact Commercial ID: {contract['commercial_contact']}\n"
+            f"Montant Total: {contract['total_amount']}€\n"
+            f"Montant dû: {contract['amount_due']}€\n"
+            f"Date de Création: {datetime.strptime(contract['creation_date'], '%Y-%m-%dT%H:%M:%S.%fZ').strftime('%d/%m/%Y à %H:%M')}\n"
+            f"Statut: {'Signé' if contract['status'] else 'non signé'}\n"
+        )
+        console.print(contract_string, style="bold green")
